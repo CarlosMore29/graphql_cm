@@ -46,7 +46,7 @@ func (f *APIQL) SetCredentials(url, secret string) {
 	f.apiQLSecret = secret
 }
 
-func (f *APIQL) QueryRequestFunc(query string, variables []InputVariable) (map[string]interface{}, error) {
+func (f *APIQL) QueryRequest(query string, variables []InputVariable) (map[string]interface{}, error) {
 	// Type Response
 	var respData map[string]interface{}
 
