@@ -2,7 +2,7 @@
 
 Consulta una API Graphql (queries y mutaciones) con ayuda de la siguiente siguiente liberia github.com/machinebox/graphql
 
-## Uso
+## v1.0.0
 
 ### QueryRequest
 
@@ -29,4 +29,32 @@ Diseñada para ejecutar mutaciones, lo que envies en variables va dentro de un o
 
 ```go
 env_cm.MutationRequest(query string, variables interface{})
+```
+
+# v1.1.0
+
+### QueryRequest
+
+Se cambio la forma en la que enviamos datos atraves de una query
+
+```go
+type InputVariable struct {
+    Key   string
+    Value Interface{}
+}
+```
+### MutationRequest
+
+funcion que ejecuta mutaciones ahora acepta que cambies el nombre a la raiz del objeto input
+
+```go
+env_cm.MutationRequest(query, inputRootName string, variables interface{})
+```
+objeto input
+```json
+{
+  <inputRootName>: {
+    <variables>
+    }
+}
 ```

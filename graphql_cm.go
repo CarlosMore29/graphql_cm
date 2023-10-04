@@ -9,10 +9,8 @@ import (
 )
 
 type InputVariable struct {
-	Key         string
-	ValueString string
-	ValueInt    int
-	ValueBool   bool
+	Key   string
+	Value interface{}
 }
 
 type MutationResponse struct {
@@ -40,11 +38,7 @@ func QueryRequest(query string, variables []InputVariable) (map[string]interface
 
 	// Variables
 	for _, input := range variables {
-		if input.ValueString != "" {
-			req.Var(input.Key, input.ValueString)
-		} else {
-			req.Var(input.Key, input.ValueInt)
-		}
+		req.Var(input.Key, input.Value)
 	}
 
 	// set header fields
@@ -57,7 +51,7 @@ func QueryRequest(query string, variables []InputVariable) (map[string]interface
 	return respData, err
 }
 
-func MutationRequest(query string, variables interface{}) (map[string]MutationResponse, error) {
+func MutationRequest(query, inputRootName string, variables interface{}) (map[string]MutationResponse, error) {
 	// Type Request
 	var respData map[string]MutationResponse
 	var errorReq error
@@ -69,7 +63,7 @@ func MutationRequest(query string, variables interface{}) (map[string]MutationRe
 	req := graphql.NewRequest(query)
 
 	// Variables
-	req.Var("input", variables)
+	req.Var(inputRootName, variables)
 
 	// set header fields
 	req.Header.Set("x-hasura-admin-secret", os.Getenv("APIQL_SECRET"))
