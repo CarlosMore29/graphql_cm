@@ -26,12 +26,32 @@ func init() {
 	envGLobals()
 }
 
-func QueryRequest(query string, variables []InputVariable) (map[string]interface{}, error) {
+// type queryRequest func (string, string, []InputVariable) (map[string]interface{}, error)
+type APIQL struct {
+	apiQLUrl    string
+	apiQLSecret string
+}
+
+func InitAPIQL() *APIQL {
+	apiql := APIQL{
+		apiQLUrl:    APIQL_URL,
+		apiQLSecret: APIQL_SECRET,
+	}
+
+	return &apiql
+}
+
+func (f *APIQL) SetCredentials(url, secret string) {
+	f.apiQLUrl = url
+	f.apiQLSecret = secret
+}
+
+func (f *APIQL) QueryRequestFunc(query string, variables []InputVariable) (map[string]interface{}, error) {
 	// Type Response
 	var respData map[string]interface{}
 
 	// Client
-	client := graphql.NewClient(APIQL_URL)
+	client := graphql.NewClient(f.apiQLUrl)
 
 	// make a request
 	req := graphql.NewRequest(query)
@@ -42,7 +62,7 @@ func QueryRequest(query string, variables []InputVariable) (map[string]interface
 	}
 
 	// set header fields
-	req.Header.Set("x-hasura-admin-secret", os.Getenv("APIQL_SECRET"))
+	req.Header.Set("x-hasura-admin-secret", f.apiQLSecret)
 
 	// define a Context for the request
 	ctx := context.Background()
@@ -51,13 +71,13 @@ func QueryRequest(query string, variables []InputVariable) (map[string]interface
 	return respData, err
 }
 
-func MutationRequest(query, inputRootName string, variables interface{}) (map[string]MutationResponse, error) {
+func (f *APIQL) MutationRequest(query, inputRootName string, variables interface{}) (map[string]MutationResponse, error) {
 	// Type Request
 	var respData map[string]MutationResponse
 	var errorReq error
 
 	// Client
-	client := graphql.NewClient(APIQL_URL)
+	client := graphql.NewClient(f.apiQLUrl)
 
 	// make a request
 	req := graphql.NewRequest(query)
@@ -66,7 +86,7 @@ func MutationRequest(query, inputRootName string, variables interface{}) (map[st
 	req.Var(inputRootName, variables)
 
 	// set header fields
-	req.Header.Set("x-hasura-admin-secret", os.Getenv("APIQL_SECRET"))
+	req.Header.Set("x-hasura-admin-secret", f.apiQLSecret)
 
 	// define a Context for the request
 	ctx := context.Background()
